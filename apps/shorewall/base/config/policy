@@ -1,0 +1,6 @@
+#SOURCE		DEST		POLICY	LOGLEVEL	LIMIT
+$FW		net		ACCEPT
+$FW		dock		ACCEPT
+
+net             all             DROP    info
+all             all             REJECT  info

@@ -1,0 +1,25 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dnsmasq
+spec:
+  template:
+    spec:  # PodSpec
+      containers:
+        - name: dnsmasq
+          # Custom args for dnsmasq
+          args:
+            - --log-facility=-
+            - --log-debug
+            - --log-queries
+            - --log-dhcp
+            - --interface=enp2s0
+            - --interface=mgmt
+            - --interface=loc
+            - --interface=guest
+            - --dhcp-authoritative
+            - --dhcp-range=enp2s0,192.168.1.100,192.168.1.254,1h
+            - --dhcp-range=mgmt,10.0.1.30,10.0.1.254,36h
+            - --dhcp-range=loc,10.0.2.20,10.0.2.254,36h
+            - --dhcp-range=guest,10.0.3.10,10.0.3.254,5h

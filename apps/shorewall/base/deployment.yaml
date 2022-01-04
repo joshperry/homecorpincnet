@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shorewall
+  labels:
+    app: shorewall
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: shorewall
+  template:
+    metadata:
+      labels:
+        app: shorewall
+    spec:
+      hostNetwork: true
+      initContainers:
+        - name: check-config
+          image: alpine:3.15
+          command:
+            - /bin/sh
+          args:
+            - -c
+            - 'apk --no-cache add shorewall; shorewall -v check'
+          volumeMounts:
+            - name: config
+              mountPath: /etc/shorewall
+              readOnly: true
+          securityContext:
+            # Only net admin is needed to run check
+            capabilities:
+              add: ["NET_ADMIN"]
+      containers:
+        - name: shorewall
+          image: alpine:3.15
+          securityContext:
+            # Unfortunately the one service that needs full privileges
+            privileged: true
+          command:
+            - /bin/sh
+          args:
+            - -c
+            - 'trap: TERM INT; apk --no-cache add shorewall; shorewall save; shorewall -v restart && sleep infinity & wait'
+          volumeMounts:
+            - name: config
+              mountPath: /etc/shorewall
+              readOnly: true
+      volumes:
+        - name: config
+          configMap:
+            name: shorewall

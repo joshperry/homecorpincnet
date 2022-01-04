@@ -1,0 +1,21 @@
+---
+- name: setup netplan
+  template:
+    src: netplan.yaml.j2
+    dest: /etc/netplan/60-ansible.yaml
+    mode: 0644
+  notify: apply netplan
+
+- name: disable systemd-resolved local stub listener
+  ansible.builtin.lineinfile:
+    path: /etc/systemd/resolved.conf
+    line: DNSStubListener=no
+  notify: reload resolved
+  when: ansible_distribution in ['Ubuntu']
+
+- name: point resolv.conf at systemd-resolved
+  ansible.builtin.file:
+    src: /run/systemd/resolve/resolv.conf
+    dest: /etc/resolv.conf
+    state: link
+  when: ansible_distribution in ['Ubuntu']

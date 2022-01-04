@@ -1,0 +1,6 @@
+namespace: default
+resources:
+  - ../../base
+
+patches:
+  - deployment.patch.yaml

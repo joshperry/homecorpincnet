@@ -1,0 +1,8 @@
+---
+- name: apply netplan
+  command: netplan apply
+
+- name: reload resolved
+  ansible.builtin.service:
+    name: systemd-resolved
+    state: reloaded

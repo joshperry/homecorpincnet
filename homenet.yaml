@@ -1,0 +1,14 @@
+#!/usr/bin/env ansible-playbook
+---
+- name: manage gateway
+  hosts: gateway
+  become: true
+  roles:
+    - netplan
+    - k3s_node
+
+- name: manage media server
+  hosts: media
+  become: true
+  roles:
+    - k3s_node

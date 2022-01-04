@@ -1,0 +1,82 @@
+#!/bin/sh
+#
+# k3s        Starts k3s.
+source /etc/profile >/dev/null
+
+PIDFILE=/var/run/k3s_server.pid
+DAEMON=/usr/local/bin/k3s
+DAEMON_ARGS="server --data-dir {{ k3s_server_location }} --log /var/log/k3s.log {{ extra_server_args | default('') }}"
+
+service_start() {
+  printf "Starting k3s: "
+
+  if [ -e ${PIDFILE} ]; then
+    echo "k3s is already running"
+    exit 0
+  fi
+
+  # Load kernel modules
+  /sbin/modprobe br_netfilter
+  /sbin/modprobe overlay
+
+  # Ensure cgroup mounted
+  mount -t cgroup cgroup /sys/fs/cgroup
+
+  printf "MODULES "
+
+  start-stop-daemon -S --quiet --oknodo --pidfile ${PIDFILE} --make-pidfile --background --startas ${DAEMON} -- ${DAEMON_ARGS}
+
+  echo "OK"
+}
+
+service_stop() {
+  if [ -e ${PIDFILE} ]; then
+    printf "Stopping k3s: "
+    start-stop-daemon -K --signal TERM --quiet --oknodo --pidfile ${PIDFILE}
+    if [ "$?" == "0" ]; then
+      echo "OK"
+      rm -rf ${PIDFILE}
+    else
+      echo "FAIL"
+    fi
+  else
+    echo "k3s is not running"
+  fi
+}
+
+service_restart() {
+  service_stop
+  sleep 1
+  service_start
+}
+
+service_status() {
+  if [ -e ${PIDFILE} ]; then
+    echo "k3s running"
+  else
+    echo "k3s stopped"
+  fi
+}
+
+case "$1" in
+  start)
+    service_start
+    ;;
+  stop)
+    service_stop
+    ;;
+  restart|reload)
+    service_restart
+    ;;
+  status)
+    service_status
+    ;;
+  zap)
+    rm -rf ${PIDFILE}
+    ;;
+  *)
+    echo "Usage: $0 {start|stop|restart|status}"
+    exit 1
+esac
+exit $?
+

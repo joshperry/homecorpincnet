@@ -1,0 +1,17 @@
+---
+resources:
+  - deployment.yaml
+
+configMapGenerator:
+  - name: shorewall
+    files:
+      - config/init
+      - config/stop
+      - config/start
+      - config/conntrack
+      - config/params
+      - config/shorewall.conf
+      - config/interfaces
+      - config/zones
+      - config/policy
+      - config/rules

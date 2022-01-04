@@ -1,0 +1,5 @@
+[gateway]
+mino ansible_user=josh
+
+[media]
+kago.local ansible_user=josh ansible_ssh_port=9222

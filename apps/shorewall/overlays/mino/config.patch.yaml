@@ -1,0 +1,64 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: shorewall
+data:
+  policy: |
+    #SOURCE		DEST		POLICY	LOGLEVEL	LIMIT
+
+    # fw gets everywhere for now
+    $FW       all     ACCEPT
+
+    # Zones with internet access
+    oldloc    net     ACCEPT
+    loc       net     ACCEPT
+    guest     net     ACCEPT
+
+    # Default reject with log
+    all       all     REJECT  info
+
+  rules: |
+    #ACTION	    	SOURCE		DEST		PROTO	DPORT	SPORT   ORIGDEST
+    Ping(ACCEPT)  all       $FW
+
+    SSH(ACCEPT)   oldloc    $FW
+
+    DNS(ACCEPT)   oldloc    $FW
+    DNS(ACCEPT)   loc       $FW
+    DNS(ACCEPT)   mgmt      $FW
+    DNS(ACCEPT)   guest     $FW
+
+    mDNS(ACCEPT)	oldloc	 	$FW
+    mDNS(ACCEPT)	loc	    	$FW
+
+    # K8S API server
+    ACCEPT        oldloc    $FW     TCP   6443
+
+  interfaces: |
+    ?FORMAT 2
+    #ZONE	  INTERFACE	OPTIONS
+    net     enp4s0    dhcp
+    oldloc  enp2s0    dhcp
+    mgmt    mgmt      dhcp
+    loc     loc       dhcp
+    guest   guest     dhcp
+
+    k8s     cni0      bridge
+
+  zones: |
+    #ZONE   TYPE             OPTIONS
+    fw      firewall
+    net     ipv4
+    oldloc  ipv4
+    mgmt    ipv4
+    loc     ipv4
+    guest   ipv4
+    k8s     ipv4
+
+  snat: |
+    # ACTION        SOURCE              DEST
+    MASQUERADE      192.168.1.0/24      enp4s0
+    MASQUERADE      10.0.1.0/24         enp4s0
+    MASQUERADE      10.0.2.0/24         enp4s0
+    MASQUERADE      10.0.3.0/24         enp4s0

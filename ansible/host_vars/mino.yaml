@@ -1,0 +1,29 @@
+---
+netplan: |
+  network:
+    version: 2
+    ethernets:
+      # ISP-side network
+      enp4s0:
+        dhcp4: true
+      # Internal network config
+      enp2s0:
+        addresses:
+        - 192.168.1.18/24
+        dhcp4: false
+    vlans:
+      mgmt:
+        id: 10
+        link: enp2s0
+        addresses:
+        - 10.0.1.1/24
+      loc:
+        id: 20
+        link: enp2s0
+        addresses:
+        - 10.0.2.1/24
+      guest:
+        id: 30
+        link: enp2s0
+        addresses:
+        - 10.0.3.1/24
