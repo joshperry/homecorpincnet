@@ -22,10 +22,13 @@ spec:
             - /bin/sh
           args:
             - -c
-            - 'apk --no-cache add shorewall; shorewall -v check'
+            - 'apk --no-cache add shorewall shorewall6 && cp /etc/myshorewall/* /etc/shorewall && cp /etc/myshorewall6/* /etc/shorewall6 && shorewall -v check && shorewall6 -v check'
           volumeMounts:
             - name: config
-              mountPath: /etc/shorewall
+              mountPath: /etc/myshorewall
+              readOnly: true
+            - name: config6
+              mountPath: /etc/myshorewall6
               readOnly: true
           securityContext:
             # Only net admin is needed to run check
@@ -41,12 +44,18 @@ spec:
             - /bin/sh
           args:
             - -c
-            - 'trap: TERM INT; apk --no-cache add shorewall; shorewall save; shorewall -v restart && sleep infinity & wait'
+            - trap '' TERM INT; apk --no-cache add shorewall6 shorewall; cp /etc/myshorewall/* /etc/shorewall; cp /etc/myshorewall6/* /etc/shorewall6; shorewall save; shorewall6 save; shorewall -v reload; shorewall6 -v reload; sleep infinity & wait
           volumeMounts:
             - name: config
-              mountPath: /etc/shorewall
+              mountPath: /etc/myshorewall
+              readOnly: true
+            - name: config6
+              mountPath: /etc/myshorewall6
               readOnly: true
       volumes:
         - name: config
           configMap:
             name: shorewall
+        - name: config6
+          configMap:
+            name: shorewall6

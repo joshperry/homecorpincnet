@@ -1,0 +1,27 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: shorewall6
+data:
+  policy: |
+    #SOURCE		DEST		POLICY	LOGLEVEL	LIMIT
+    $FW       net		  ACCEPT
+
+    net       all     DROP    info
+    all       all     REJECT  info
+
+  rules: |
+    #ACTION         SRC       DEST	PROTO	SRDPRT  DSTPORT ORIGDST
+    Ping(ACCEPT)	  net	      $FW
+    SSH(ACCEPT)     net     	$FW
+
+  zones: |
+    #ZONE   TYPE        OPTIONS
+    fw      firewall
+    net     ip
+
+  interfaces: |
+    ?FORMAT 2
+    #ZONE   INTERFACE   OPTIONS
+    net     enp4s0      accept_ra

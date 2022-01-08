@@ -28,12 +28,13 @@ data:
     DNS(ACCEPT)   loc       $FW
     DNS(ACCEPT)   mgmt      $FW
     DNS(ACCEPT)   guest     $FW
+    DNS(ACCEPT)   k8s       oldloc
 
     mDNS(ACCEPT)	oldloc	 	$FW
     mDNS(ACCEPT)	loc	    	$FW
 
-    # K8S API server
-    ACCEPT        oldloc    $FW     TCP   6443
+    # K8S
+    ACCEPT        oldloc    $FW     TCP   6443 # api server
 
   interfaces: |
     ?FORMAT 2
@@ -44,21 +45,22 @@ data:
     loc     loc       dhcp
     guest   guest     dhcp
 
-    k8s     cni0      bridge
+    k8s     cni0      routeback
 
   zones: |
     #ZONE   TYPE             OPTIONS
     fw      firewall
-    net     ipv4
-    oldloc  ipv4
-    mgmt    ipv4
-    loc     ipv4
-    guest   ipv4
-    k8s     ipv4
+    net     ip
+    oldloc  ip
+    mgmt    ip
+    loc     ip
+    guest   ip
+    k8s     ip
 
   snat: |
     # ACTION        SOURCE              DEST
-    MASQUERADE      192.168.1.0/24      enp4s0
-    MASQUERADE      10.0.1.0/24         enp4s0
-    MASQUERADE      10.0.2.0/24         enp4s0
-    MASQUERADE      10.0.3.0/24         enp4s0
+    MASQUERADE      enp2s0              enp4s0
+    MASQUERADE      mgmt                enp4s0
+    MASQUERADE      loc                 enp4s0
+    MASQUERADE      guest               enp4s0
+    MASQUERADE      cni0                enp4s0

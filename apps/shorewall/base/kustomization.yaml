@@ -15,3 +15,12 @@ configMapGenerator:
       - config/zones
       - config/policy
       - config/rules
+  - name: shorewall6
+    files:
+      - config6/conntrack
+      - config6/params
+      - config6/shorewall6.conf
+      - config6/interfaces
+      - config6/zones
+      - config6/policy
+      - config6/rules
