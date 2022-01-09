@@ -42,6 +42,9 @@ data:
     # Unifi UI
     ACCEPT        loc:10.0.2.10       mgmt:10.0.1.3    TCP   443
 
+    # mgmt
+    NTP(ACCEPT)   mgmt      net
+
   interfaces: |
     ?FORMAT 2
     #ZONE	  INTERFACE	OPTIONS
