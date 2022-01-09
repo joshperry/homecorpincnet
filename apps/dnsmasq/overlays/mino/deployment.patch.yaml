@@ -23,3 +23,5 @@ spec:
             - --dhcp-range=mgmt,10.0.1.30,10.0.1.254,36h
             - --dhcp-range=loc,10.0.2.20,10.0.2.254,36h
             - --dhcp-range=guest,10.0.3.10,10.0.3.254,5h
+            - --dhcp-host=duck,10.0.1.3
+            - --dhcp-host=bones,10.0.2.10
