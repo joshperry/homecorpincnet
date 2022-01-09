@@ -3,3 +3,4 @@ resources:
 
 patchesStrategicMerge:
   - config.patch.yaml
+  - config6.patch.yaml
