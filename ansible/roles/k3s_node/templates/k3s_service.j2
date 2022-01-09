@@ -5,7 +5,7 @@ source /etc/profile >/dev/null
 
 PIDFILE=/var/run/k3s_server.pid
 DAEMON=/usr/local/bin/k3s
-DAEMON_ARGS="server --data-dir {{ k3s_server_location }} --log /var/log/k3s.log {{ extra_server_args | default('') }}"
+DAEMON_ARGS="server --data-dir {{ k3s_server_location }} --log /var/log/k3s.log {{ k3s_extra_server_args | default('') }}"
 
 service_start() {
   printf "Starting k3s: "
