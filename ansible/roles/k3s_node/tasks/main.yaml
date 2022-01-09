@@ -92,6 +92,12 @@
     enabled: yes
   when: ansible_service_mgr == 'sysvinit'
 
+- name: Enable K3s service on TNAS TOS
+  ansible.builtin.file:
+    path: /etc/sc.d/k3s
+    state: touch
+  when: ansible_os_family == 'Terra-Master Tnas'
+
 - name: Wait for node-token
   wait_for:
     path: "{{ k3s_server_location }}/server/node-token"
